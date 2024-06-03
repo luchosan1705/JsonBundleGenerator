@@ -11,7 +11,7 @@
             <h2>Pregunta {{ options+1 }}</h2>
             <div v-for="(optionfield, option) in optionsFields" :key="option">
               <label :hidden="optionfield.hidden">{{ optionfield.label }}</label>
-              <input v-if="optionfield.type == 'text'" :type=optionfield.type v-model="optionfield.value" :hidden="optionfield.hidden"/>
+              <input v-if="optionfield.type != 'item_array'" :type=optionfield.type v-model="optionfield.value" :hidden="optionfield.hidden"/>
               <button v-if="optionfield.type == 'item_array'" @click.prevent="addItem(optionfield)">Agregar item</button>
               <div v-if="optionfield.type == 'item_array'">
                 <div v-for="(itemsField, items) in optionfield.value" :key="items">
@@ -34,8 +34,6 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue';
-
 export default {
   data() {
           return {
@@ -51,8 +49,7 @@ export default {
       this.init = true;
     },
     onSubmit() {
-      // Procesar el formulario
-      console.log('Formulario enviado:', this.saveSteps);
+      console.log('Formulario enviado:', this.fields);
     },
     newStep() {
       this.fields.push([              
@@ -63,8 +60,8 @@ export default {
       stepfield.options.push([{ label: 'Titulo', value: '', type: 'text' },
                               { label: 'Subtitulo', value: '', type: 'text' },              
                               { label: 'Tipo', value: '', type: 'text' },              
-                              { label: 'Cantidad minima', value: '', type: 'text' },             
-                              { label: 'Cantidad maxima', value: '', type: 'text' },              
+                              { label: 'Cantidad minima', value: '', type: 'number' },             
+                              { label: 'Cantidad maxima', value: '', type: 'number' },              
                               { label: '', value: [] , type: 'item_array' }]);              
     },
     addItem(option) {
