@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-# JsonBundleGenerator
-Json Bundle Generator for Magento 2 new bundle type
-=======
 # JSON Bundle Generator
 
 This template should help get you started developing with Vue 3 in Vite.
@@ -31,4 +27,3 @@ npm run dev
 ```sh
 npm run build
 ```
->>>>>>> a2bb70d (init module)
