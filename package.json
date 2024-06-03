@@ -1,9 +1,12 @@
 {
   "name": "json-bundle-generator",
   "version": "0.0.0",
+  "homepage": "https://luchosan1705.github.io/JsonBundleGenerator/",
   "private": true,
   "type": "module",
   "scripts": {
+    "predeploy" : "npm run build",
+    "deploy" : "gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
@@ -14,6 +17,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
+    "gh-pages": "^6.1.1",
     "vite": "^5.2.8"
   }
 }
