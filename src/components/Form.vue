@@ -2,23 +2,32 @@
     <div>
     <form @submit.prevent="generateJSON">
       <div v-for="(field, steps) in fields" :key="steps">
-        <h1>Paso {{ steps+1 }} </h1>
+        <h1>Paso {{ steps+1 }} <button @click.prevent="deleteField(fields,steps)" class="btn btn-danger">-</button></h1>
         <div v-for="(stepfield, step) in field" :key="step">
-          <label :hidden="stepfield.hidden">{{ stepfield.label }}</label>
-          <input :type=stepfield.type v-model="stepfield.value" :hidden="stepfield.hidden"/>
-          <button @click.prevent="addOption(stepfield)" :hidden="!init">Agregar pregunta</button>
+          <div class="mb-3">
+            <label :hidden="stepfield.hidden" class="form-label">{{ stepfield.label }}</label>
+            <input class="form-control" :type=stepfield.type v-model="stepfield.value" :hidden="stepfield.hidden">
+          </div>
+          <h3>Preguntas <button @click.prevent="addOption(stepfield)" :hidden="!init" class="btn btn-secondary">+</button></h3>
           <div v-for="(optionsFields, options) in stepfield.options" :key="options">
-            <h2>Pregunta {{ options+1 }}</h2>
+            <h3>Pregunta {{ options+1 }}<button @click.prevent="deleteField(stepfield.options,options)" class="btn btn-danger">-</button></h3>
             <div v-for="(optionfield, option) in optionsFields" :key="option">
-              <label :hidden="optionfield.hidden">{{ optionfield.label }}</label>
-              <input v-if="optionfield.type != 'item_array'" :type=optionfield.type v-model="optionfield.value" :hidden="optionfield.hidden"/>
-              <button v-if="optionfield.type == 'item_array'" @click.prevent="addItem(optionfield)">Agregar item</button>
+              <div class="mb-3">
+                <label :hidden="optionfield.hidden" class="form-label">{{ optionfield.label }}</label>
+                <input  class="form-control" v-if="optionfield.type != 'item_array' && optionfield.type != 'select'" :type=optionfield.type v-model="optionfield.value" :hidden="optionfield.hidden"/>
+                <select class="form-select" v-if="optionfield.type == 'select'" v-model="optionfield.value" :hidden="optionfield.hidden">
+                  <option v-for="(selectOptions) in optionfield.options" :value="selectOptions.index">{{selectOptions.label}}</option>
+                </select>
+              </div>
               <div v-if="optionfield.type == 'item_array'">
+                <h3>Productos <button v-if="optionfield.type == 'item_array'" @click.prevent="addItem(optionfield)" class="btn btn-secondary">+</button></h3>
                 <div v-for="(itemsField, items) in optionfield.value" :key="items">
-                  <h3>Producto {{ items +1 }}</h3>
+                  <h4>Producto {{ items +1 }}<button @click.prevent="deleteField(optionfield.value,items)" class="btn btn-danger">-</button></h4>
                   <div v-for="(itemField, item) in itemsField" :key="item">
-                    <label :hidden="itemField.hidden">{{ itemField.label }}</label>
-                    <input v-if="itemField.type == 'text'" :type=itemField.type v-model="itemField.value" :hidden="itemField.hidden"/>
+                    <div class="mb-3">
+                      <label :hidden="itemField.hidden" class="form-label">{{ itemField.label }}</label>
+                      <input class="form-control" v-if="itemField.type == 'text'" :type=itemField.type v-model="itemField.value" :hidden="itemField.hidden"/>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -26,9 +35,9 @@
           </div>
         </div>
       </div>
-      <button @click.prevent="newBundle" :hidden="init">Nuevo Bundle</button>
-      <button @click.prevent="newStep" :hidden="!init">Agregar Paso</button>
-      <button type="submit" :hidden="!init">Generar JSON</button>
+      <button @click.prevent="newBundle" :hidden="init" class="btn btn-primary create">Crear JSON Bundle</button>
+      <button @click.prevent="newStep" :hidden="!init" class="btn btn-secondary">Agregar Paso</button>
+      <button type="submit" :hidden="!init" class="btn btn-success">Generar JSON</button>
     </form>
   </div>
 </template>
@@ -93,7 +102,7 @@ export default {
     addOption(stepfield) {
       stepfield.options.push([{ label: 'Titulo', value: '', type: 'text', index: 'title' },
                               { label: 'Subtitulo', value: '', type: 'text', index: 'subtitle' },              
-                              { label: 'Tipo', value: '', type: 'text', index: 'type' },              
+                              { label: 'Tipo', value: '', type: 'select', index: 'type', options: [{label: 'Drop down', index: 'drop_down'},{label:'Checkbox', index:'checkbox'},{label:'Multiple', index:'multiple'}] },              
                               { label: 'Cantidad minima', value: '', type: 'number', index: 'min_qty' },             
                               { label: 'Cantidad maxima', value: '', type: 'number', index: 'max_qty' },              
                               { label: '', value: [] , type: 'item_array', index: 'items' }]);              
@@ -113,6 +122,10 @@ export default {
         }
         this.fields.push(field);
       };
+    },
+    deleteField(field,index) {
+      console.log(field);
+      field.splice(index,1);
     }
   }
 };
