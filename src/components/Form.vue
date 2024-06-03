@@ -1,6 +1,6 @@
 <template>
     <div>
-    <form @submit.prevent="onSubmit">
+    <form @submit.prevent="generateJSON">
       <div v-for="(field, steps) in fields" :key="steps">
         <h1>Paso {{ steps+1 }} </h1>
         <div v-for="(stepfield, step) in field" :key="step">
@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import FileSaver from 'file-saver';
 export default {
   data() {
           return {
@@ -43,32 +44,65 @@ export default {
   },
   methods: {
     newBundle() {
-      this.fields = [[             
-        { label: 'Nombre', value: '', type: 'text', options: [] }
-      ]];
+      this.newStep();
       this.init = true;
     },
-    onSubmit() {
-      console.log('Formulario enviado:', this.fields);
+    generateJSON() {
+      let step_number = 1;
+      let objectJSON = {"steps" : []};
+      this.fields.forEach(element => {
+        let optionsArray = this.generateOptionsArray(element[0].options);
+        objectJSON.steps.push({step: element[0].value, step_number: step_number, options: optionsArray});      
+        step_number++;
+      });
+
+      const blob = new Blob([JSON.stringify(objectJSON)], { type: 'application/json' });
+      const filename = 'bundle.json';
+      FileSaver.saveAs(blob, filename);
+    },
+    generateOptionsArray(array){
+      let optionsArray = [];
+      array.forEach( options => {
+        let optionObject = {};
+        options.forEach ( option => {
+          optionObject[option.index] = option.value;
+          if (option.index == 'items'){
+            optionObject[option.index] = this.generateItemsArray(option.value);
+          }
+        })
+        optionsArray.push(optionObject);
+      });
+      return optionsArray;
+    },
+    generateItemsArray(array){
+      let itemsArray = [];
+      array.forEach( items => {
+        let itemObject = {};
+        items.forEach ( item => {
+          itemObject[item.index] = item.value;
+        })
+        itemsArray.push(itemObject);
+      });
+      return itemsArray;      
     },
     newStep() {
       this.fields.push([              
-        { label: 'Nombre', value: '', type: 'text', options: [] }
+        { label: 'Nombre', value: '', type: 'text', options: [], index: 'step' }
       ]);
     },
     addOption(stepfield) {
-      stepfield.options.push([{ label: 'Titulo', value: '', type: 'text' },
-                              { label: 'Subtitulo', value: '', type: 'text' },              
-                              { label: 'Tipo', value: '', type: 'text' },              
-                              { label: 'Cantidad minima', value: '', type: 'number' },             
-                              { label: 'Cantidad maxima', value: '', type: 'number' },              
-                              { label: '', value: [] , type: 'item_array' }]);              
+      stepfield.options.push([{ label: 'Titulo', value: '', type: 'text', index: 'title' },
+                              { label: 'Subtitulo', value: '', type: 'text', index: 'subtitle' },              
+                              { label: 'Tipo', value: '', type: 'text', index: 'type' },              
+                              { label: 'Cantidad minima', value: '', type: 'number', index: 'min_qty' },             
+                              { label: 'Cantidad maxima', value: '', type: 'number', index: 'max_qty' },              
+                              { label: '', value: [] , type: 'item_array', index: 'items' }]);              
     },
     addItem(option) {
       option.value.push([
-        { label: 'Sku', value: '', type: 'text' },              
-        { label: 'Nombre', value: '', type: 'text' },              
-        { label: 'Precio', value: '', type: 'text' },             
+        { label: 'Sku', value: '', type: 'text', index: 'sku' },              
+        { label: 'Nombre', value: '', type: 'text', index: 'name' },              
+        { label: 'Precio', value: '', type: 'text', index: 'price' },             
       ]);
     },
     addProduct() {
