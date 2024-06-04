@@ -88,7 +88,7 @@ export default {
       let optionsArray = [];
       let optionNumber = 1;
       if (array.length == 0){
-        this.errorMsg = 'Faltan cargar opciones a un paso';
+        this.errorMsg = 'Faltan cargar preguntas a un paso';
         return;
       }
       array.forEach( options => {
@@ -110,7 +110,7 @@ export default {
     generateItemsArray(array){
       let itemsArray = [];
       if (array.length == 0){
-        this.errorMsg = 'Faltan cargar items a una pregunta';
+        this.errorMsg = 'Faltan cargar productos a una pregunta';
         return;
       }
       array.forEach( items => {
