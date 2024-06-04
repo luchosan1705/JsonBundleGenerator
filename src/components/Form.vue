@@ -2,8 +2,10 @@
     <div>
     <form @submit.prevent="generateJSON">
       <button @click.prevent="newBundle" :hidden="init" class="btn btn-primary create">Crear JSON Bundle</button>
-      <button type="submit" :hidden="!init" class="btn btn-success">Generar JSON</button>
-      <button @click.prevent="newStep" :hidden="!init" class="btn btn-secondary">Agregar Paso</button>
+      <div class="fixed_button">
+        <button type="submit" :hidden="!init" class="btn btn-success">Generar JSON</button>
+        <button @click.prevent="newStep" :hidden="!init" class="btn btn-secondary">Agregar Paso</button>
+      </div>
       <span class="alert alert-danger col-2" role="alert" :hidden="!errorMsg">
         {{ errorMsg }}
       </span>
