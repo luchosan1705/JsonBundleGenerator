@@ -14,7 +14,7 @@
             <label :hidden="stepfield.hidden" class="form-label">{{ stepfield.label }}</label>
             <input class="form-control" :type=stepfield.type v-model="stepfield.value" :hidden="stepfield.hidden" :required="stepfield.required">
           </div>
-          <h3>Preguntas <button @click.prevent="addOption(stepfield)" :hidden="!init" class="btn btn-secondary">+</button></h3>
+          <h3><button @click.prevent="addOption(stepfield)" :hidden="!init" class="btn btn-secondary">Agregar pregunta</button></h3>
           <div v-for="(optionsFields, options) in stepfield.options" :key="options" class="">
             <h3>Pregunta {{ options+1 }}<button @click.prevent="deleteField(stepfield.options,options)" class="btn btn-danger">-</button></h3>
             <div v-for="(optionfield, option) in optionsFields" :key="option">
@@ -26,7 +26,7 @@
                 </select>
               </div>
               <div v-if="optionfield.type == 'item_array'">
-                <h3>Productos <button v-if="optionfield.type == 'item_array'" @click.prevent="addItem(optionfield)" class="btn btn-secondary">+</button></h3>
+                <h3><button v-if="optionfield.type == 'item_array'" @click.prevent="addItem(optionfield)" class="btn btn-secondary">Agregar producto</button></h3>
                 <div v-for="(itemsField, items) in optionfield.value" :key="items">
                   <h4>Producto {{ items +1 }}<button @click.prevent="deleteField(optionfield.value,items)" class="btn btn-danger">-</button></h4>
                   <div v-for="(itemField, item) in itemsField" :key="item">
