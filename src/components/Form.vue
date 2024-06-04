@@ -7,7 +7,7 @@
       <span class="alert alert-danger col-2" role="alert" :hidden="!errorMsg">
         {{ errorMsg }}
       </span>
-      <div v-for="(field, steps) in fields" :key="steps" class="offset-md-3 col-md-4">
+      <div v-for="(field, steps) in fields" :key="steps" class="offset-md-3 col-md-4 card text-bg-primarycard text-bg-light mb-3 card-body">
         <h1>Paso {{ steps+1 }} <button @click.prevent="deleteField(fields,steps,true)" class="btn btn-danger">-</button></h1>
         <div v-for="(stepfield, step) in field" :key="step">
           <div class="mb-3">
