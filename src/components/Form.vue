@@ -5,7 +5,7 @@
       <button @click.prevent="newStep" :hidden="!init" class="btn btn-secondary">Agregar Paso</button>
       <button type="submit" :hidden="!init" class="btn btn-success">Generar JSON</button>
       <div v-for="(field, steps) in fields" :key="steps" class="offset-md-3 col-md-4">
-        <h1>Paso {{ steps+1 }} <button @click.prevent="deleteField(fields,steps)" class="btn btn-danger">-</button></h1>
+        <h1>Paso {{ steps+1 }} <button @click.prevent="deleteField(fields,steps,true)" class="btn btn-danger">-</button></h1>
         <div v-for="(stepfield, step) in field" :key="step">
           <div class="mb-3">
             <label :hidden="stepfield.hidden" class="form-label">{{ stepfield.label }}</label>
@@ -123,8 +123,10 @@ export default {
         this.fields.push(field);
       };
     },
-    deleteField(field,index) {
-      console.log(field);
+    deleteField(field,index,isStep = false) {
+      if (isStep && this.fields.length == 1 ) {
+        return;
+      }
       field.splice(index,1);
     }
   }
