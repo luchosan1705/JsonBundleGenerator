@@ -65,7 +65,7 @@ export default {
       let step_number = 1;
       let objectJSON = {"steps" : []};
       this.fields.forEach(element => {
-        let optionsArray = this.generateOptionsArray(element[0].options);
+        let optionsArray = this.generateOptionsArray(element[0].options,step_number);
         objectJSON.steps.push({step: element[0].value, step_number: step_number, options: optionsArray});      
         step_number++;
       });
@@ -74,14 +74,16 @@ export default {
       const filename = 'bundle.json';
       FileSaver.saveAs(blob, filename);
     },
-    generateOptionsArray(array){
+    generateOptionsArray(array,step_number){
       let optionsArray = [];
+      let optionNumber = 1;
       if (array.length == 0){
         this.errorMsg = 'Faltan cargar opciones a un paso';
         return;
       }
       array.forEach( options => {
         let optionObject = {};
+        optionObject["code"] = step_number.toString().concat("-"+optionNumber.toString());
         options.forEach ( option => {
           if (option.value){
             optionObject[option.index] = option.value;
@@ -91,6 +93,7 @@ export default {
           }
         })
         optionsArray.push(optionObject);
+        optionNumber++;
       });
       return optionsArray;
     },
@@ -128,7 +131,7 @@ export default {
       option.value.push([
         { label: 'Sku', value: '', type: 'text', index: 'sku', required:true },              
         { label: 'Nombre', value: '', type: 'text', index: 'name' },              
-        { label: 'Precio', value: '0', type: 'text', index: 'price', required:true },             
+        { label: 'Precio extra', value: '0', type: 'text', index: 'price', required:true },             
       ]);
     },
     addProduct() {
