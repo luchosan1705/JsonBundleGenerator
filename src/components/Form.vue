@@ -1,7 +1,10 @@
 <template>
     <div>
     <form @submit.prevent="generateJSON">
-      <div v-for="(field, steps) in fields" :key="steps">
+      <button @click.prevent="newBundle" :hidden="init" class="btn btn-primary create">Crear JSON Bundle</button>
+      <button @click.prevent="newStep" :hidden="!init" class="btn btn-secondary">Agregar Paso</button>
+      <button type="submit" :hidden="!init" class="btn btn-success">Generar JSON</button>
+      <div v-for="(field, steps) in fields" :key="steps" class="offset-md-3 col-md-4">
         <h1>Paso {{ steps+1 }} <button @click.prevent="deleteField(fields,steps)" class="btn btn-danger">-</button></h1>
         <div v-for="(stepfield, step) in field" :key="step">
           <div class="mb-3">
@@ -9,7 +12,7 @@
             <input class="form-control" :type=stepfield.type v-model="stepfield.value" :hidden="stepfield.hidden">
           </div>
           <h3>Preguntas <button @click.prevent="addOption(stepfield)" :hidden="!init" class="btn btn-secondary">+</button></h3>
-          <div v-for="(optionsFields, options) in stepfield.options" :key="options">
+          <div v-for="(optionsFields, options) in stepfield.options" :key="options" class="">
             <h3>Pregunta {{ options+1 }}<button @click.prevent="deleteField(stepfield.options,options)" class="btn btn-danger">-</button></h3>
             <div v-for="(optionfield, option) in optionsFields" :key="option">
               <div class="mb-3">
@@ -35,9 +38,6 @@
           </div>
         </div>
       </div>
-      <button @click.prevent="newBundle" :hidden="init" class="btn btn-primary create">Crear JSON Bundle</button>
-      <button @click.prevent="newStep" :hidden="!init" class="btn btn-secondary">Agregar Paso</button>
-      <button type="submit" :hidden="!init" class="btn btn-success">Generar JSON</button>
     </form>
   </div>
 </template>
