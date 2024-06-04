@@ -5,10 +5,12 @@
       <div class="fixed_button">
         <button type="submit" :hidden="!init" class="btn btn-success">Generar JSON</button>
         <button @click.prevent="newStep" :hidden="!init" class="btn btn-secondary">Agregar Paso</button>
-      </div>
-      <span class="alert alert-danger col-2" role="alert" :hidden="!errorMsg">
+        <br>
+        <br>
+        <span class="alert alert-danger col-2" role="alert" :hidden="!errorMsg">
         {{ errorMsg }}
-      </span>
+        </span>
+      </div>
       <div v-for="(field, steps) in fields" :key="steps" class="offset-md-3 col-md-4 card text-bg-primarycard text-bg-light mb-3 card-body">
         <h1>Paso {{ steps+1 }} <button @click.prevent="deleteField(fields,steps,true)" class="btn btn-danger">-</button></h1>
         <div v-for="(stepfield, step) in field" :key="step">
@@ -122,6 +124,7 @@ export default {
       ]);
     },
     addOption(stepfield) {
+      this.errorMsg = '';
       stepfield.options.push([{ label: 'Titulo', value: '', type: 'text', index: 'title', required:true },
                               { label: 'Subtitulo', value: '', type: 'text', index: 'subtitle' },              
                               { label: 'Tipo', value: '', type: 'select', index: 'type', options: [{label: 'Drop down', index: 'drop_down'},{label:'Checkbox', index:'checkbox'},{label:'Multiple', index:'multiple'}], required:true },              
@@ -130,6 +133,7 @@ export default {
                               { label: '', value: [] , type: 'item_array', index: 'items' }]);              
     },
     addItem(option) {
+      this.errorMsg = '';
       option.value.push([
         { label: 'Sku', value: '', type: 'text', index: 'sku', required:true },              
         { label: 'Nombre', value: '', type: 'text', index: 'name' },              
