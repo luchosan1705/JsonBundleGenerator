@@ -4,12 +4,15 @@
       <button @click.prevent="newBundle" :hidden="init" class="btn btn-primary create">Crear JSON Bundle</button>
       <button @click.prevent="newStep" :hidden="!init" class="btn btn-secondary">Agregar Paso</button>
       <button type="submit" :hidden="!init" class="btn btn-success">Generar JSON</button>
+      <span class="alert alert-danger col-2" role="alert" :hidden="!errorMsg">
+        {{ errorMsg }}
+      </span>
       <div v-for="(field, steps) in fields" :key="steps" class="offset-md-3 col-md-4">
         <h1>Paso {{ steps+1 }} <button @click.prevent="deleteField(fields,steps,true)" class="btn btn-danger">-</button></h1>
         <div v-for="(stepfield, step) in field" :key="step">
           <div class="mb-3">
             <label :hidden="stepfield.hidden" class="form-label">{{ stepfield.label }}</label>
-            <input class="form-control" :type=stepfield.type v-model="stepfield.value" :hidden="stepfield.hidden">
+            <input class="form-control" :type=stepfield.type v-model="stepfield.value" :hidden="stepfield.hidden" :required="stepfield.required">
           </div>
           <h3>Preguntas <button @click.prevent="addOption(stepfield)" :hidden="!init" class="btn btn-secondary">+</button></h3>
           <div v-for="(optionsFields, options) in stepfield.options" :key="options" class="">
@@ -17,8 +20,8 @@
             <div v-for="(optionfield, option) in optionsFields" :key="option">
               <div class="mb-3">
                 <label :hidden="optionfield.hidden" class="form-label">{{ optionfield.label }}</label>
-                <input  class="form-control" v-if="optionfield.type != 'item_array' && optionfield.type != 'select'" :type=optionfield.type v-model="optionfield.value" :hidden="optionfield.hidden"/>
-                <select class="form-select" v-if="optionfield.type == 'select'" v-model="optionfield.value" :hidden="optionfield.hidden">
+                <input  class="form-control" v-if="optionfield.type != 'item_array' && optionfield.type != 'select'" :type=optionfield.type v-model="optionfield.value" :hidden="optionfield.hidden" :required="optionfield.required"/>
+                <select class="form-select" v-if="optionfield.type == 'select'" v-model="optionfield.value" :hidden="optionfield.hidden" :required="optionfield.required">
                   <option v-for="(selectOptions) in optionfield.options" :value="selectOptions.index">{{selectOptions.label}}</option>
                 </select>
               </div>
@@ -29,7 +32,7 @@
                   <div v-for="(itemField, item) in itemsField" :key="item">
                     <div class="mb-3">
                       <label :hidden="itemField.hidden" class="form-label">{{ itemField.label }}</label>
-                      <input class="form-control" v-if="itemField.type == 'text'" :type=itemField.type v-model="itemField.value" :hidden="itemField.hidden"/>
+                      <input class="form-control" v-if="itemField.type == 'text'" :type=itemField.type v-model="itemField.value" :hidden="itemField.hidden" :required="itemField.required"/>
                     </div>
                   </div>
                 </div>
@@ -48,6 +51,7 @@ export default {
   data() {
           return {
             init: false,
+            errorMsg: '',
             fields: []
           };
   },
@@ -57,6 +61,7 @@ export default {
       this.init = true;
     },
     generateJSON() {
+      this.errorMsg = '';
       let step_number = 1;
       let objectJSON = {"steps" : []};
       this.fields.forEach(element => {
@@ -64,17 +69,23 @@ export default {
         objectJSON.steps.push({step: element[0].value, step_number: step_number, options: optionsArray});      
         step_number++;
       });
-
-      const blob = new Blob([JSON.stringify(objectJSON)], { type: 'application/json' });
+      if (this.errorMsg) return;
+      const blob = new Blob([JSON.stringify(objectJSON,null,'\t')], { type: 'application/json' });
       const filename = 'bundle.json';
       FileSaver.saveAs(blob, filename);
     },
     generateOptionsArray(array){
       let optionsArray = [];
+      if (array.length == 0){
+        this.errorMsg = 'Faltan cargar opciones a un paso';
+        return;
+      }
       array.forEach( options => {
         let optionObject = {};
         options.forEach ( option => {
-          optionObject[option.index] = option.value;
+          if (option.value){
+            optionObject[option.index] = option.value;
+          }
           if (option.index == 'items'){
             optionObject[option.index] = this.generateItemsArray(option.value);
           }
@@ -85,10 +96,16 @@ export default {
     },
     generateItemsArray(array){
       let itemsArray = [];
+      if (array.length == 0){
+        this.errorMsg = 'Faltan cargar items a una pregunta';
+        return;
+      }
       array.forEach( items => {
         let itemObject = {};
         items.forEach ( item => {
-          itemObject[item.index] = item.value;
+          if (item.value){
+            itemObject[item.index] = item.value;
+          }
         })
         itemsArray.push(itemObject);
       });
@@ -96,22 +113,22 @@ export default {
     },
     newStep() {
       this.fields.push([              
-        { label: 'Nombre', value: '', type: 'text', options: [], index: 'step' }
+        { label: 'Nombre', value: '', type: 'text', options: [], index: 'step', required: true }
       ]);
     },
     addOption(stepfield) {
-      stepfield.options.push([{ label: 'Titulo', value: '', type: 'text', index: 'title' },
+      stepfield.options.push([{ label: 'Titulo', value: '', type: 'text', index: 'title', required:true },
                               { label: 'Subtitulo', value: '', type: 'text', index: 'subtitle' },              
-                              { label: 'Tipo', value: '', type: 'select', index: 'type', options: [{label: 'Drop down', index: 'drop_down'},{label:'Checkbox', index:'checkbox'},{label:'Multiple', index:'multiple'}] },              
-                              { label: 'Cantidad minima', value: '', type: 'number', index: 'min_qty' },             
-                              { label: 'Cantidad maxima', value: '', type: 'number', index: 'max_qty' },              
+                              { label: 'Tipo', value: '', type: 'select', index: 'type', options: [{label: 'Drop down', index: 'drop_down'},{label:'Checkbox', index:'checkbox'},{label:'Multiple', index:'multiple'}], required:true },              
+                              { label: 'Cantidad minima', value: '0', type: 'number', index: 'min_qty', required:true },             
+                              { label: 'Cantidad maxima', value: '1', type: 'number', index: 'max_qty', required:true },              
                               { label: '', value: [] , type: 'item_array', index: 'items' }]);              
     },
     addItem(option) {
       option.value.push([
-        { label: 'Sku', value: '', type: 'text', index: 'sku' },              
+        { label: 'Sku', value: '', type: 'text', index: 'sku', required:true },              
         { label: 'Nombre', value: '', type: 'text', index: 'name' },              
-        { label: 'Precio', value: '', type: 'text', index: 'price' },             
+        { label: 'Precio', value: '0', type: 'text', index: 'price', required:true },             
       ]);
     },
     addProduct() {
