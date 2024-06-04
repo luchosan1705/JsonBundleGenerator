@@ -7,11 +7,17 @@
         <button @click.prevent="newStep" :hidden="!init" class="btn btn-secondary">Agregar Paso</button>
         <br>
         <br>
+        <p style="font-weight: bold;">Pasos</p>
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <button v-for="(number) in fields.length" type="button" @click.prevent="scroll(number)" class="btn btn-primary">{{ number }}</button>
+        </div>
+        <br>
+        <br>
         <span class="alert alert-danger col-2" role="alert" :hidden="!errorMsg">
         {{ errorMsg }}
         </span>
       </div>
-      <div v-for="(field, steps) in fields" :key="steps" class="offset-md-3 col-md-4 card text-bg-primarycard text-bg-light mb-3 card-body">
+      <div v-for="(field, steps) in fields" :key="steps" class="offset-md-3 col-md-4 card text-bg-primarycard text-bg-light mb-3 card-body" :id="steps+1">
         <h1>Paso {{ steps+1 }} <button @click.prevent="deleteField(fields,steps,true)" class="btn btn-danger">-</button></h1>
         <div v-for="(stepfield, step) in field" :key="step">
           <div class="mb-3">
@@ -29,7 +35,7 @@
                   <option v-for="(selectOptions) in optionfield.options" :value="selectOptions.index">{{selectOptions.label}}</option>
                 </select>
               </div>
-              <div v-if="optionfield.type == 'item_array'">
+              <div v-if="optionfield.type == 'item_array'" id="option">
                 <h3><button v-if="optionfield.type == 'item_array'" @click.prevent="addItem(optionfield)" class="btn btn-secondary">Agregar producto</button></h3>
                 <div v-for="(itemsField, items) in optionfield.value" :key="items">
                   <h4>Producto {{ items +1 }}<button @click.prevent="deleteField(optionfield.value,items)" class="btn btn-danger">-</button></h4>
@@ -154,6 +160,9 @@ export default {
         return;
       }
       field.splice(index,1);
+    },
+    scroll(number) {
+      document.getElementById(number).scrollIntoView();
     }
   }
 };
