@@ -7,7 +7,7 @@
         <button @click.prevent="newStep" :hidden="!init" class="btn btn-secondary">Agregar Paso</button>
         <br>
         <br>
-        <p style="font-weight: bold;">Pasos</p>
+        <p v-if="fields.length>0" style="font-weight: bold;">Pasos</p>
         <div class="btn-group" role="group" aria-label="Basic example">
           <button v-for="(number) in fields.length" type="button" @click.prevent="scroll(number)" class="btn btn-primary">{{ number }}</button>
         </div>
