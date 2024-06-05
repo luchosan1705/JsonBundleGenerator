@@ -13,6 +13,9 @@
         </div>
         <br>
         <br>
+        <button @click.prevent="reset" :hidden="!init" class="btn btn-warning">Resetear</button>
+        <br>
+        <br>
         <span class="alert alert-danger col-2" role="alert" :hidden="!errorMsg">
         {{ errorMsg }}
         </span>
@@ -170,6 +173,10 @@ export default {
     },
     scroll(number) {
       document.getElementById(number).scrollIntoView();
+    },
+    reset() {
+      this.init = false;
+      this.fields = []
     }
   }
 };
