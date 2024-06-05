@@ -13,6 +13,9 @@
         </div>
         <br>
         <br>
+        <button @click.prevent="toogleInfo" :hidden="!init" class="btn btn-info">{{ btnInfoMsg }}</button>
+        <br>
+        <br>
         <button @click.prevent="reset" :hidden="!init" class="btn btn-warning">Resetear</button>
         <br>
         <br>
@@ -29,6 +32,7 @@
           <div class="mb-3">
             <label :hidden="stepfield.hidden" class="form-label">{{ stepfield.label }}</label>
             <input class="form-control" :type=stepfield.type v-model="stepfield.value" :hidden="stepfield.hidden" :required="stepfield.required">
+            <p class="text-secondary" :hidden="!showInfo">{{ stepfield.info }}</p>
           </div>
           <h3><button @click.prevent="addOption(stepfield)" :hidden="!init" class="btn btn-secondary">Agregar pregunta</button></h3>
           <div v-for="(optionsFields, options) in stepfield.options" :key="options" class="">
@@ -40,6 +44,7 @@
                 <select class="form-select" v-if="optionfield.type == 'select'" v-model="optionfield.value" :hidden="optionfield.hidden" :required="optionfield.required">
                   <option v-for="(selectOptions) in optionfield.options" :value="selectOptions.index">{{selectOptions.label}}</option>
                 </select>
+                <p class="text-secondary" :hidden="!showInfo">{{ optionfield.info }}</p>
               </div>
               <div v-if="optionfield.type == 'item_array'" id="option">
                 <h3><button v-if="optionfield.type == 'item_array'" @click.prevent="addItem(optionfield)" class="btn btn-secondary">Agregar producto</button></h3>
@@ -52,6 +57,7 @@
                       <div class="form-switch">
                         <input class="form-check-input"  role="switch" type="checkbox" v-model="itemField.value" v-if="itemField.type == 'checkbox'" :hidden="itemField.hidden" :required="itemField.required">
                       </div>
+                      <p class="text-secondary" :hidden="!showInfo">{{ itemField.info }}</p>
                     </div>
                   </div>
                 </div>
@@ -71,7 +77,9 @@ export default {
           return {
             init: false,
             errorMsg: '',
-            fields: []
+            fields: [],
+            btnInfoMsg: 'Mostrar informacion',
+            showInfo: false
           };
   },
   methods: {
@@ -151,27 +159,27 @@ export default {
     },
     newStep() {
       this.fields.push([              
-        { label: 'Nombre', value: '', type: 'text', options: [], index: 'step', required: true }
+        { label: 'Nombre', value: '', type: 'text', options: [], index: 'step', required: true, info: 'Nombre del paso, tal cual se carga aquí se va a mostrar en el front.' }
       ]);
     },
     addOption(stepfield) {
       this.errorMsg = '';
-      stepfield.options.push([{ label: 'Titulo', value: '', type: 'text', index: 'title', required:true },
-                              { label: 'Subtitulo', value: '', type: 'text', index: 'subtitle' },              
-                              { label: 'Tipo', value: '', type: 'select', index: 'type', options: [{label: 'Drop down', index: 'drop_down'},{label:'Checkbox', index:'checkbox'},{label:'Multiple', index:'multiple'}], required:true },              
-                              { label: 'Cantidad minima', value: '0', type: 'number', index: 'min_qty', required:true },             
-                              { label: 'Cantidad maxima', value: '1', type: 'number', index: 'max_qty', required:true },   
-                              { label: 'Skus deshabilitantes', value: '', type: 'text', index: 'disable' },                         
+      stepfield.options.push([{ label: 'Titulo', value: '', type: 'text', index: 'title', required:true, info: 'Pregunta que se va a mostrar en el front' },
+                              { label: 'Subtitulo', value: '', type: 'text', index: 'subtitle', info: 'Titulo que se muestra dentro del contenedor de items' },              
+                              { label: 'Tipo', value: '', type: 'select', index: 'type', options: [{label: 'Drop down', index: 'drop_down'},{label:'Checkbox', index:'checkbox'},{label:'Multiple', index:'multiple'}], required:true,  info: 'Tipo de pregunta. Multiple: Es con selector de cantidades por item de la pregunta. Drop down: Permite elegir un item, seria como un radio button. Checkbox: Permite elegir multiples items (cantidad 1).'},              
+                              { label: 'Cantidad minima', value: '0', type: 'number', index: 'min_qty', required:true, info: 'El minimo de qty que se debe seleccionar, 0 seria no requerido.' },             
+                              { label: 'Cantidad maxima', value: '1', type: 'number', index: 'max_qty', required:true, info: 'El máximo de qty que hay para seleccionar.' },   
+                              { label: 'Skus deshabilitantes', value: '', type: 'text', index: 'disable', info: 'Ingresar sku separados por , que indicaran que si alguno esta seleccionado oculta esta pregunta' },                         
                               { label: '', value: [] , type: 'item_array', index: 'items' }]);              
     },
     addItem(option) {
       this.errorMsg = '';
       option.value.push([
-        { label: 'Sku', value: '', type: 'text', index: 'sku', required:true },              
-        { label: 'Nombre', value: '', type: 'text', index: 'name' },              
-        { label: 'Skus deshabilitantes', value: '', type: 'text', index: 'disable' },                         
-        { label: 'Preseleccionado', value: '0', type: 'checkbox', index: 'selected' },             
-        { label: 'Precio extra', value: '0', type: 'text', index: 'price' },             
+        { label: 'Sku', value: '', type: 'text', index: 'sku', required:true, info: 'Sku del producto simple' },              
+        { label: 'Nombre', value: '', type: 'text', index: 'name', info: 'Nombre que se va a mostrar en el bundle para el item. Si no se carga muestra el del producto simple.' },              
+        { label: 'Skus deshabilitantes', value: '', type: 'text', index: 'disable', info: 'Ingresar sku separados por , que indicaran que si alguno esta seleccionado oculta este item' },                         
+        { label: 'Preseleccionado', value: '0', type: 'checkbox', index: 'selected', info: 'true si el sku de la opción viene preseleccionado.' },             
+        { label: 'Precio extra', value: '0', type: 'text', index: 'price', info:'Si tiene un precio extra se carga, sino se pone en 0. Si no se coloca nada tomara el precio del producto simple como el extra.' },             
       ]);
     },
     addProduct() {
@@ -194,7 +202,17 @@ export default {
     },
     reset() {
       this.init = false;
-      this.fields = []
+      this.fields = [];
+      this.showInfo = false;
+      this.btnInfoMsg = 'Mostrar informacion';
+    },
+    toogleInfo() {
+      this.showInfo = !this.showInfo;
+      if (!this.showInfo) {
+        this.btnInfoMsg = 'Mostrar informacion';
+      } else {
+        this.btnInfoMsg = 'Ocultar informacion';
+      }
     }
   }
 };
