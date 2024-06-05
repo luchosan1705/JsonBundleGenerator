@@ -20,6 +20,9 @@
         {{ errorMsg }}
         </span>
       </div>
+      <div class="row">
+
+      </div>
       <div v-for="(field, steps) in fields" :key="steps" class="offset-md-3 col-md-4 card text-bg-primarycard text-bg-light mb-3 card-body" :id="steps+1">
         <h1>Paso {{ steps+1 }} <button @click.prevent="deleteField(fields,steps,true)" class="btn btn-danger">-</button></h1>
         <div v-for="(stepfield, step) in field" :key="step">
@@ -46,6 +49,9 @@
                     <div class="mb-3">
                       <label :hidden="itemField.hidden" class="form-label">{{ itemField.label }}</label>
                       <input class="form-control" v-if="itemField.type == 'text'" :type=itemField.type v-model="itemField.value" :hidden="itemField.hidden" :required="itemField.required"/>
+                      <div class="form-switch">
+                        <input class="form-check-input"  role="switch" type="checkbox" v-model="itemField.value" v-if="itemField.type == 'checkbox'" :hidden="itemField.hidden" :required="itemField.required">
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -101,6 +107,9 @@ export default {
         let optionObject = {};
         optionObject["code"] = step_number.toString().concat("-"+optionNumber.toString());
         options.forEach ( option => {
+          if (option.index == 'disable' && option.value){
+            option.value = option.value.trim().split(",");
+          }
           if (option.value){
             optionObject[option.index] = option.value;
           }
@@ -126,8 +135,11 @@ export default {
       array.forEach( items => {
         let itemObject = {};
         items.forEach ( item => {
-          if (item.index == 'price' && item.value === ""){
-            
+          if (item.index == 'selected' && item.value === "0"){
+            item.value = null;
+          }
+          if (item.index == 'disable' && item.value){
+            item.value = item.value.trim().split(",");
           }
           if (item.value){
             itemObject[item.index] = item.value;
@@ -148,7 +160,8 @@ export default {
                               { label: 'Subtitulo', value: '', type: 'text', index: 'subtitle' },              
                               { label: 'Tipo', value: '', type: 'select', index: 'type', options: [{label: 'Drop down', index: 'drop_down'},{label:'Checkbox', index:'checkbox'},{label:'Multiple', index:'multiple'}], required:true },              
                               { label: 'Cantidad minima', value: '0', type: 'number', index: 'min_qty', required:true },             
-                              { label: 'Cantidad maxima', value: '1', type: 'number', index: 'max_qty', required:true },              
+                              { label: 'Cantidad maxima', value: '1', type: 'number', index: 'max_qty', required:true },   
+                              { label: 'Skus deshabilitantes', value: '', type: 'text', index: 'disable' },                         
                               { label: '', value: [] , type: 'item_array', index: 'items' }]);              
     },
     addItem(option) {
@@ -156,6 +169,8 @@ export default {
       option.value.push([
         { label: 'Sku', value: '', type: 'text', index: 'sku', required:true },              
         { label: 'Nombre', value: '', type: 'text', index: 'name' },              
+        { label: 'Skus deshabilitantes', value: '', type: 'text', index: 'disable' },                         
+        { label: 'Preseleccionado', value: '0', type: 'checkbox', index: 'selected' },             
         { label: 'Precio extra', value: '0', type: 'text', index: 'price' },             
       ]);
     },
