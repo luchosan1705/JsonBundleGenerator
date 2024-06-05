@@ -126,6 +126,9 @@ export default {
       array.forEach( items => {
         let itemObject = {};
         items.forEach ( item => {
+          if (item.index == 'price' && item.value === ""){
+            
+          }
           if (item.value){
             itemObject[item.index] = item.value;
           }
@@ -153,7 +156,7 @@ export default {
       option.value.push([
         { label: 'Sku', value: '', type: 'text', index: 'sku', required:true },              
         { label: 'Nombre', value: '', type: 'text', index: 'name' },              
-        { label: 'Precio extra', value: '0', type: 'text', index: 'price', required:true },             
+        { label: 'Precio extra', value: '0', type: 'text', index: 'price' },             
       ]);
     },
     addProduct() {
