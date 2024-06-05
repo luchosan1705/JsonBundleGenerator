@@ -76,6 +76,9 @@ export default {
       let objectJSON = {"steps" : []};
       this.fields.forEach(element => {
         let optionsArray = this.generateOptionsArray(element[0].options,step_number);
+        if (optionsArray.length == 0){
+          return;
+        }
         objectJSON.steps.push({step: element[0].value, step_number: step_number, options: optionsArray});      
         step_number++;
       });
@@ -88,7 +91,7 @@ export default {
       let optionsArray = [];
       let optionNumber = 1;
       if (array.length == 0){
-        this.errorMsg = 'Faltan cargar preguntas a un paso';
+        this.errorMsg = `Faltan cargar preguntas al paso ${step_number}`;
         return;
       }
       array.forEach( options => {
@@ -99,7 +102,11 @@ export default {
             optionObject[option.index] = option.value;
           }
           if (option.index == 'items'){
-            optionObject[option.index] = this.generateItemsArray(option.value);
+            let itemsArray = this.generateItemsArray(option.value,step_number,optionNumber);
+            if (itemsArray.length == 0){
+              return;
+            }
+            optionObject[option.index] = itemsArray;
           }
         })
         optionsArray.push(optionObject);
@@ -107,10 +114,10 @@ export default {
       });
       return optionsArray;
     },
-    generateItemsArray(array){
+    generateItemsArray(array,step_number,optionNumber){
       let itemsArray = [];
       if (array.length == 0){
-        this.errorMsg = 'Faltan cargar productos a una pregunta';
+        this.errorMsg = `Faltan cargar items a la pregunta ${optionNumber} del paso ${step_number}`;
         return;
       }
       array.forEach( items => {
