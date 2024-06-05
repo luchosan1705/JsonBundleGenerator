@@ -178,7 +178,7 @@ export default {
         { label: 'Sku', value: '', type: 'text', index: 'sku', required:true, info: 'Sku del producto simple' },              
         { label: 'Nombre', value: '', type: 'text', index: 'name', info: 'Nombre que se va a mostrar en el bundle para el item. Si no se carga muestra el del producto simple.' },              
         { label: 'Skus deshabilitantes', value: '', type: 'text', index: 'disable', info: 'Ingresar sku separados por , que indicaran que si alguno esta seleccionado oculta este item' },                         
-        { label: 'Preseleccionado', value: '0', type: 'checkbox', index: 'selected', info: 'true si el sku de la opción viene preseleccionado.' },             
+        { label: 'Preseleccionado', value: '0', type: 'checkbox', index: 'selected', info: 'Seleccionar si el sku de la opción viene preseleccionado.' },             
         { label: 'Precio extra', value: '0', type: 'text', index: 'price', info:'Si tiene un precio extra se carga, sino se pone en 0. Si no se coloca nada tomara el precio del producto simple como el extra.' },             
       ]);
     },
