@@ -34,7 +34,7 @@
             <input class="form-control" :type=stepfield.type v-model="stepfield.value" :hidden="stepfield.hidden" :required="stepfield.required">
             <p class="text-secondary" :hidden="!showInfo">{{ stepfield.info }}</p>
           </div>
-          <h3><button @click.prevent="addOption(stepfield)" :hidden="!init" class="btn btn-secondary">Agregar pregunta</button></h3>
+          <h3 v-if="stepfield.index == 'sub_options'"><button @click.prevent="addOption(stepfield)" :hidden="!init" class="btn btn-secondary">Agregar pregunta</button></h3>
           <div v-for="(optionsFields, options) in stepfield.options" :key="options" class="">
             <h3>Pregunta {{ options+1 }}<button @click.prevent="deleteField(stepfield.options,options)" class="btn btn-danger">-</button></h3>
             <div v-for="(optionfield, option) in optionsFields" :key="option">
@@ -92,11 +92,11 @@ export default {
       let step_number = 1;
       let objectJSON = {"steps" : []};
       this.fields.forEach(element => {
-        let optionsArray = this.generateOptionsArray(element[0].options,step_number);
+        let optionsArray = this.generateOptionsArray(element[1].options,step_number);
         if (optionsArray.length == 0){
           return;
         }
-        objectJSON.steps.push({step: element[0].value, step_number: step_number, options: optionsArray});      
+        objectJSON.steps.push({step: element[0].value, step_number: step_number, sub_options: element[1].value,  options: optionsArray});      
         step_number++;
       });
       if (this.errorMsg) return;
@@ -146,6 +146,9 @@ export default {
           if (item.index == 'selected' && item.value === "0"){
             item.value = null;
           }
+          if (item.index == 'icon_ngr' && item.value === "0"){
+            item.value = null;
+          }
           if (item.index == 'disable' && item.value){
             item.value = item.value.trim().split(",");
           }
@@ -159,7 +162,8 @@ export default {
     },
     newStep() {
       this.fields.push([              
-        { label: 'Nombre', value: '', type: 'text', options: [], index: 'step', required: true, info: 'Nombre del paso, tal cual se carga aquí se va a mostrar en el front.' }
+        { label: 'Nombre', value: '', type: 'text', index: 'step', required: true, info: 'Nombre del paso, tal cual se carga aquí se va a mostrar en el front.' },
+        { label: 'Cantidad de sub-opciones', value: '0', options: [], type: 'number', index: 'sub_options', info: 'Cantidad de sub-opciones que tiene el paso, por ej cuando tiene multiples pizzas. (0 que no tiene)' }                         
       ]);
     },
     addOption(stepfield) {
@@ -180,6 +184,8 @@ export default {
         { label: 'Skus deshabilitantes', value: '', type: 'text', index: 'disable', info: 'Ingresar sku separados por , que indicaran que si alguno esta seleccionado oculta este item' },                         
         { label: 'Preseleccionado', value: '0', type: 'checkbox', index: 'selected', info: 'Seleccionar si el sku de la opción viene preseleccionado.' },             
         { label: 'Precio extra', value: '0', type: 'text', index: 'price', info:'Si tiene un precio extra se carga, sino se pone en 0. Si no se coloca nada tomara el precio del producto simple como el extra.' },             
+        { label: 'Titulo sub-item', value: '', type: 'text', index: 'title', info: 'Titulo de sub-item en caso de tener varios box para la pregunta, se agruparan por titulo por eso es importante que sea igual para el grupo' },             
+        { label: 'Usar icono', value: '0', type: 'checkbox', index: 'icon_ngr', info: 'Seleccionar si la imagen que se va a mostrar va a ser el icono y no el thumbnail.' },                     
       ]);
     },
     addProduct() {
