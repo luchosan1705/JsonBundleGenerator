@@ -91,9 +91,10 @@ export default {
       this.errorMsg = '';
       let step_number = 1;
       let objectJSON = {"steps" : []};
-      this.fields.forEach(element => {
+      let fieldsCopy = [].concat(this.fields);
+      fieldsCopy.forEach(element => {
         let optionsArray = this.generateOptionsArray(element[1].options,step_number);
-        if (optionsArray.length == 0){
+        if (optionsArray && optionsArray.length == 0){
           return;
         }
         objectJSON.steps.push({step: element[0].value, step_number: step_number, sub_options: element[1].value,  options: optionsArray});      
@@ -116,14 +117,13 @@ export default {
         optionObject["code"] = step_number.toString().concat("-"+optionNumber.toString());
         options.forEach ( option => {
           if (option.index == 'disable' && option.value){
-            option.value = option.value.trim().split(",");
-          }
-          if (option.value){
+            optionObject[option.index] = option.value.trim().split(",");
+          } else if (option.value && option.index != 'items'){
             optionObject[option.index] = option.value;
           }
           if (option.index == 'items'){
             let itemsArray = this.generateItemsArray(option.value,step_number,optionNumber);
-            if (itemsArray.length == 0){
+            if (!itemsArray || itemsArray.length == 0){
               return;
             }
             optionObject[option.index] = itemsArray;
@@ -150,9 +150,8 @@ export default {
             item.value = null;
           }
           if (item.index == 'disable' && item.value){
-            item.value = item.value.trim().split(",");
-          }
-          if (item.value){
+            itemObject[item.index] = item.value.trim().split(",");
+          } else if (item.value){
             itemObject[item.index] = item.value;
           }
         })
