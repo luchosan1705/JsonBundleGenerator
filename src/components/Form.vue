@@ -2,9 +2,19 @@
     <div>
     <form @submit.prevent="generateJSON">
       <button @click.prevent="newBundle" :hidden="init" class="btn btn-primary create">Crear JSON Bundle</button>
-      <br>
-      <br>
+      <br :hidden="init">
+      <br :hidden="init">
       <button @click.prevent="load" :hidden="init" class="btn btn-success create">Cargar JSON Bundle</button>
+      <br :hidden="init">
+      <br :hidden="init">
+      <div class="row g-3" :hidden="init">
+        <div class="col-auto">
+          <input type="file" @change="handleFileUpload" class="form-control col-2">
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-primary mb-3" @click.prevent="loadJSONData">Cargar archivo</button>
+        </div>
+      </div>
       <div class="fixed_button">
         <button type="submit" :hidden="!init" class="btn btn-success">Generar JSON</button>
         <button @click.prevent="newStep" :hidden="!init" class="btn btn-secondary">Agregar Paso</button>
@@ -87,7 +97,8 @@ export default {
             fields: [],
             btnInfoMsg: 'Mostrar informacion',
             showInfo: false,
-            successMsg: ''
+            successMsg: '',
+            selectedFile: null
           };
   },
   methods: {
@@ -169,32 +180,36 @@ export default {
       });
       return itemsArray;      
     },
-    newStep() {
-      this.fields.push([              
-        { label: 'Nombre', value: '', type: 'text', index: 'step', required: true, info: 'Nombre del paso, tal cual se carga aquí se va a mostrar en el front.' },
-        { label: 'Cantidad de sub-opciones', value: '0', options: [], type: 'number', index: 'sub_options', info: 'Cantidad de sub-opciones que tiene el paso, por ej cuando tiene multiples pizzas. (0 que no tiene)' }                         
-      ]);
+    newStep(event, name = '',subOptions = 0, options = []) {
+      let newStepFields = [              
+        { label: 'Nombre', value: name, type: 'text', index: 'step', required: true, info: 'Nombre del paso, tal cual se carga aquí se va a mostrar en el front.' },
+        { label: 'Cantidad de sub-opciones', value: subOptions, options: options, type: 'number', index: 'sub_options', info: 'Cantidad de sub-opciones que tiene el paso, por ej cuando tiene multiples pizzas. (0 que no tiene)' }                         
+      ]; 
+      this.fields.push(newStepFields);
+      return newStepFields[1];
     },
-    addOption(stepfield) {
+    addOption(stepfield,title = '', subtitle = '', type = '', min_qty = 0,max_qty = 1,disable = '',item_array = []) {
       this.errorMsg = '';
-      stepfield.options.push([{ label: 'Titulo', value: '', type: 'text', index: 'title', required:true, info: 'Pregunta que se va a mostrar en el front' },
-                              { label: 'Subtitulo', value: '', type: 'text', index: 'subtitle', info: 'Titulo que se muestra dentro del contenedor de items' },              
-                              { label: 'Tipo', value: '', type: 'select', index: 'type', options: [{label: 'Drop down', index: 'drop_down'},{label:'Checkbox', index:'checkbox'},{label:'Multiple', index:'multiple'}], required:true,  info: 'Tipo de pregunta. Multiple: Es con selector de cantidades por item de la pregunta. Drop down: Permite elegir un item, seria como un radio button. Checkbox: Permite elegir multiples items (cantidad 1).'},              
-                              { label: 'Cantidad minima', value: '0', type: 'number', index: 'min_qty', required:true, info: 'El minimo de qty que se debe seleccionar, 0 seria no requerido.' },             
-                              { label: 'Cantidad maxima', value: '1', type: 'number', index: 'max_qty', required:true, info: 'El máximo de qty que hay para seleccionar.' },   
-                              { label: 'Skus deshabilitantes', value: '', type: 'text', index: 'disable', info: 'Ingresar sku separados por , que indicaran que si alguno esta seleccionado oculta esta pregunta' },                         
-                              { label: '', value: [] , type: 'item_array', index: 'items' }]);              
+      let optionsField = [{ label: 'Titulo', value: title, type: 'text', index: 'title', required:true, info: 'Pregunta que se va a mostrar en el front' },
+                              { label: 'Subtitulo', value: subtitle, type: 'text', index: 'subtitle', info: 'Titulo que se muestra dentro del contenedor de items' },              
+                              { label: 'Tipo', value: type, type: 'select', index: 'type', options: [{label: 'Drop down', index: 'drop_down'},{label:'Checkbox', index:'checkbox'},{label:'Multiple', index:'multiple'}], required:true,  info: 'Tipo de pregunta. Multiple: Es con selector de cantidades por item de la pregunta. Drop down: Permite elegir un item, seria como un radio button. Checkbox: Permite elegir multiples items (cantidad 1).'},              
+                              { label: 'Cantidad minima', value: min_qty, type: 'number', index: 'min_qty', required:true, info: 'El minimo de qty que se debe seleccionar, 0 seria no requerido.' },             
+                              { label: 'Cantidad maxima', value: max_qty, type: 'number', index: 'max_qty', required:true, info: 'El máximo de qty que hay para seleccionar.' },   
+                              { label: 'Skus deshabilitantes', value: disable, type: 'text', index: 'disable', info: 'Ingresar sku separados por , que indicaran que si alguno esta seleccionado oculta esta pregunta' },                         
+                              { label: '', value: item_array , type: 'item_array', index: 'items' }];
+      stepfield.options.push(optionsField);   
+      return optionsField[6];           
     },
-    addItem(option) {
+    addItem(option,sku = '',name = '',disable = '',selected = '0',price = '0',title = '',icon_ngr = '0') {
       this.errorMsg = '';
       option.value.push([
-        { label: 'Sku', value: '', type: 'text', index: 'sku', required:true, info: 'Sku del producto simple' },              
-        { label: 'Nombre', value: '', type: 'text', index: 'name', info: 'Nombre que se va a mostrar en el bundle para el item. Si no se carga muestra el del producto simple.' },              
-        { label: 'Skus deshabilitantes', value: '', type: 'text', index: 'disable', info: 'Ingresar sku separados por , que indicaran que si alguno esta seleccionado oculta este item' },                         
-        { label: 'Preseleccionado', value: '0', type: 'checkbox', index: 'selected', info: 'Seleccionar si el sku de la opción viene preseleccionado.' },             
-        { label: 'Precio extra', value: '0', type: 'text', index: 'price', info:'Si tiene un precio extra se carga, sino se pone en 0. Si no se coloca nada tomara el precio del producto simple como el extra.' },             
-        { label: 'Titulo sub-item', value: '', type: 'text', index: 'title', info: 'Titulo de sub-item en caso de tener varios box para la pregunta, se agruparan por titulo por eso es importante que sea igual para el grupo' },             
-        { label: 'Usar icono', value: '0', type: 'checkbox', index: 'icon_ngr', info: 'Seleccionar si la imagen que se va a mostrar va a ser el icono y no el thumbnail.' },                     
+        { label: 'Sku', value: sku, type: 'text', index: 'sku', required:true, info: 'Sku del producto simple' },              
+        { label: 'Nombre', value: name, type: 'text', index: 'name', info: 'Nombre que se va a mostrar en el bundle para el item. Si no se carga muestra el del producto simple.' },              
+        { label: 'Skus deshabilitantes', value: disable, type: 'text', index: 'disable', info: 'Ingresar sku separados por , que indicaran que si alguno esta seleccionado oculta este item' },                         
+        { label: 'Preseleccionado', value: selected, type: 'checkbox', index: 'selected', info: 'Seleccionar si el sku de la opción viene preseleccionado.' },             
+        { label: 'Precio extra', value: price, type: 'text', index: 'price', info:'Si tiene un precio extra se carga, sino se pone en 0. Si no se coloca nada tomara el precio del producto simple como el extra.' },             
+        { label: 'Titulo sub-item', value: title, type: 'text', index: 'title', info: 'Titulo de sub-item en caso de tener varios box para la pregunta, se agruparan por titulo por eso es importante que sea igual para el grupo' },             
+        { label: 'Usar icono', value: icon_ngr, type: 'checkbox', index: 'icon_ngr', info: 'Seleccionar si la imagen que se va a mostrar va a ser el icono y no el thumbnail.' },                     
       ]);
     },
     addProduct() {
@@ -231,9 +246,7 @@ export default {
       }
     },
     save() {
-      console.log(this.fields);
       localStorage.fieldsState = JSON.stringify(this.fields);
-      console.log(localStorage.fieldsState);
       this.successMsg = 'Se guardo el json en el navegador.';
       setTimeout(() => {
         this.successMsg = '';
@@ -247,6 +260,54 @@ export default {
       } else {
         this.errorMsg = 'No hay ningun json guardado en el navegador';
       }
+    },
+    handleFileUpload(event) {
+      this.selectedFile = event.target.files[0];
+    },
+    async loadJSONData() {
+      if (!this.selectedFile) {
+        this.errorMsg = 'Por favor elija un archivo JSON.';
+        setTimeout(() => {
+          this.errorMsg = '';
+        }, 3000);
+        return;
+      }
+
+      try {
+        this.jsonImport = await this.readFileAsJSON(this.selectedFile);
+        this.processJsonData();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    processJsonData(event) {
+      console.log(this.jsonImport);
+      this.init = true;
+      this.errorMsg = '';
+      this.successMsg = '';
+      this.jsonImport.steps.forEach((step) => {
+        let stepField = this.newStep(event,step.step,step.sub_options);
+        step.options.forEach((option) => {
+          let optionField = this.addOption(stepField,option.title,option.subtitle,option.type,option.min_qty,option.max_qty,option.disable.join(","));
+          option.items.forEach((item) => {
+            this.addItem(optionField,item.sku,item.name,item.disable.join(","),item.selected,item.price,item.title,item.icon_ngr);
+          });
+        });
+      });
+    },
+    readFileAsJSON(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const jsonData = JSON.parse(reader.result);
+            resolve(jsonData);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        reader.readAsText(file);
+      });
     }
   }
 };
