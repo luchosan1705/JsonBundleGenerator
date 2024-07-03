@@ -2,6 +2,9 @@
     <div>
     <form @submit.prevent="generateJSON">
       <button @click.prevent="newBundle" :hidden="init" class="btn btn-primary create">Crear JSON Bundle</button>
+      <br>
+      <br>
+      <button @click.prevent="load" :hidden="init" class="btn btn-success create">Cargar JSON Bundle</button>
       <div class="fixed_button">
         <button type="submit" :hidden="!init" class="btn btn-success">Generar JSON</button>
         <button @click.prevent="newStep" :hidden="!init" class="btn btn-secondary">Agregar Paso</button>
@@ -16,11 +19,15 @@
         <button @click.prevent="toogleInfo" :hidden="!init" class="btn btn-info">{{ btnInfoMsg }}</button>
         <br>
         <br>
+        <button @click.prevent="save" :hidden="!init" class="btn btn-warning">Guardar</button>
         <button @click.prevent="reset" :hidden="!init" class="btn btn-warning">Resetear</button>
         <br>
         <br>
         <span class="alert alert-danger col-2" role="alert" :hidden="!errorMsg">
         {{ errorMsg }}
+        </span>
+        <span class="alert alert-success col-2" role="alert" :hidden="!successMsg">
+        {{ successMsg }}
         </span>
       </div>
       <div class="row">
@@ -79,13 +86,16 @@ export default {
             errorMsg: '',
             fields: [],
             btnInfoMsg: 'Mostrar informacion',
-            showInfo: false
+            showInfo: false,
+            successMsg: ''
           };
   },
   methods: {
     newBundle() {
       this.newStep();
       this.init = true;
+      this.errorMsg = '';
+      this.successMsg = '';
     },
     generateJSON() {
       this.errorMsg = '';
@@ -210,6 +220,7 @@ export default {
       this.fields = [];
       this.showInfo = false;
       this.btnInfoMsg = 'Mostrar informacion';
+      this.errorMsg = '';
     },
     toogleInfo() {
       this.showInfo = !this.showInfo;
@@ -217,6 +228,24 @@ export default {
         this.btnInfoMsg = 'Mostrar informacion';
       } else {
         this.btnInfoMsg = 'Ocultar informacion';
+      }
+    },
+    save() {
+      console.log(this.fields);
+      localStorage.fieldsState = JSON.stringify(this.fields);
+      console.log(localStorage.fieldsState);
+      this.successMsg = 'Se guardo el json en el navegador.';
+      setTimeout(() => {
+        this.successMsg = '';
+      }, 3000);
+    },
+    load() {
+      this.errorMsg = '';
+      if (localStorage.fieldsState) {
+        this.fields = JSON.parse(localStorage.fieldsState);
+        this.init = true;
+      } else {
+        this.errorMsg = 'No hay ningun json guardado en el navegador';
       }
     }
   }
