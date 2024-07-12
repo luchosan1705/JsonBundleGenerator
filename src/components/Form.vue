@@ -57,10 +57,13 @@
             <div v-for="(optionfield, option) in optionsFields" :key="option">
               <div class="mb-3">
                 <label :hidden="optionfield.hidden" class="form-label">{{ optionfield.label }}</label>
-                <input  class="form-control" v-if="optionfield.type != 'item_array' && optionfield.type != 'select'" :type=optionfield.type v-model="optionfield.value" :hidden="optionfield.hidden" :required="optionfield.required"/>
+                <input  class="form-control" v-if="optionfield.type != 'item_array' && optionfield.type != 'select' && optionfield.type != 'checkbox'" :type=optionfield.type v-model="optionfield.value" :hidden="optionfield.hidden" :required="optionfield.required"/>
                 <select class="form-select" v-if="optionfield.type == 'select'" v-model="optionfield.value" :hidden="optionfield.hidden" :required="optionfield.required">
                   <option v-for="(selectOptions) in optionfield.options" :value="selectOptions.index">{{selectOptions.label}}</option>
                 </select>
+                <div class="form-switch">
+                  <input class="form-check-input"  role="switch" type="checkbox" v-model="optionfield.value" v-if="optionfield.type == 'checkbox'" :hidden="optionfield.hidden" :required="optionfield.required">
+                </div>
                 <p class="text-secondary" :hidden="!showInfo">{{ optionfield.info }}</p>
               </div>
               <div v-if="optionfield.type == 'item_array'" id="option">
@@ -167,6 +170,9 @@ export default {
           if (item.index == 'selected' && item.value === "0"){
             item.value = null;
           }
+          if (item.index == 'special_price' && item.value === "0"){
+            item.value = null;
+          }
           if (item.index == 'icon_ngr' && item.value === "0"){
             item.value = null;
           }
@@ -188,7 +194,7 @@ export default {
       this.fields.push(newStepFields);
       return newStepFields[1];
     },
-    addOption(stepfield,title = '', subtitle = '', type = '', min_qty = 0,max_qty = 1,disable = '',item_array = []) {
+    addOption(stepfield,title = '', subtitle = '', type = '', min_qty = 0,max_qty = 1,disable = '',base_price = '0',item_array = []) {
       this.errorMsg = '';
       let optionsField = [{ label: 'Titulo', value: title, type: 'text', index: 'title', required:true, info: 'Pregunta que se va a mostrar en el front' },
                               { label: 'Subtitulo', value: subtitle, type: 'text', index: 'subtitle', info: 'Titulo que se muestra dentro del contenedor de items' },              
@@ -196,11 +202,12 @@ export default {
                               { label: 'Cantidad minima', value: min_qty, type: 'number', index: 'min_qty', required:true, info: 'El minimo de qty que se debe seleccionar, 0 seria no requerido.' },             
                               { label: 'Cantidad maxima', value: max_qty, type: 'number', index: 'max_qty', required:true, info: 'El máximo de qty que hay para seleccionar.' },   
                               { label: 'Skus deshabilitantes', value: disable, type: 'text', index: 'disable', info: 'Ingresar sku separados por , que indicaran que si alguno esta seleccionado oculta esta pregunta' },                         
+                              { label: 'Precio base', value: base_price, type: 'checkbox', index: 'base_price', info: 'Seleccionar si el precio que se seleccione en la opcion pertenece al precio base.' },             
                               { label: '', value: item_array , type: 'item_array', index: 'items' }];
       stepfield.options.push(optionsField);   
       return optionsField[6];           
     },
-    addItem(option,sku = '',name = '',disable = '',selected = '0',price = '0',title = '',icon_ngr = '0') {
+    addItem(option,sku = '',name = '',disable = '',selected = '0',price = '0',special_price = '0',title = '',icon_ngr = '0') {
       this.errorMsg = '';
       option.value.push([
         { label: 'Sku', value: sku, type: 'text', index: 'sku', required:true, info: 'Sku del producto simple' },              
@@ -208,6 +215,7 @@ export default {
         { label: 'Skus deshabilitantes', value: disable, type: 'text', index: 'disable', info: 'Ingresar sku separados por , que indicaran que si alguno esta seleccionado oculta este item' },                         
         { label: 'Preseleccionado', value: selected, type: 'checkbox', index: 'selected', info: 'Seleccionar si el sku de la opción viene preseleccionado.' },             
         { label: 'Precio extra', value: price, type: 'text', index: 'price', info:'Si tiene un precio extra se carga, sino se pone en 0. Si no se coloca nada tomara el precio del producto simple como el extra.' },             
+        { label: 'Precio especial', value: special_price, type: 'text', index: 'special_price', info:'Si tiene un precio especial se carga, sino se pone en 0. Si no se coloca nada tomara el precio extra o del item.' },             
         { label: 'Titulo sub-item', value: title, type: 'text', index: 'title', info: 'Titulo de sub-item en caso de tener varios box para la pregunta, se agruparan por titulo por eso es importante que sea igual para el grupo' },             
         { label: 'Usar icono', value: icon_ngr, type: 'checkbox', index: 'icon_ngr', info: 'Seleccionar si la imagen que se va a mostrar va a ser el icono y no el thumbnail.' },                     
       ]);
@@ -288,9 +296,9 @@ export default {
       this.jsonImport.steps.forEach((step) => {
         let stepField = this.newStep(event,step.step,step.sub_options);
         step.options.forEach((option) => {
-          let optionField = this.addOption(stepField,option.title,option.subtitle,option.type,option.min_qty,option.max_qty,option.disable.join(","));
+          let optionField = this.addOption(stepField,option.title,option.subtitle,option.type,option.min_qty,option.max_qty,option.disable.join(","),option.base_price);
           option.items.forEach((item) => {
-            this.addItem(optionField,item.sku,item.name,item.disable.join(","),item.selected,item.price,item.title,item.icon_ngr);
+            this.addItem(optionField,item.sku,item.name,item.disable.join(","),item.selected,item.price,item.special_price,item.title,item.icon_ngr);
           });
         });
       });
