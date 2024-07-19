@@ -194,7 +194,7 @@ export default {
       this.fields.push(newStepFields);
       return newStepFields[1];
     },
-    addOption(stepfield,title = '', subtitle = '', type = '', min_qty = 0,max_qty = 1,disable = '',base_price = '0',item_array = []) {
+    addOption(stepfield,title = '', subtitle = '', type = '', min_qty = '0',max_qty = '1',disable = '',base_price = '0',item_array = []) {
       this.errorMsg = '';
       let optionsField = [{ label: 'Titulo', value: title, type: 'text', index: 'title', required:true, info: 'Pregunta que se va a mostrar en el front' },
                               { label: 'Subtitulo', value: subtitle, type: 'text', index: 'subtitle', info: 'Titulo que se muestra dentro del contenedor de items' },              
@@ -205,7 +205,7 @@ export default {
                               { label: 'Precio base', value: base_price, type: 'checkbox', index: 'base_price', info: 'Seleccionar si el precio que se seleccione en la opcion pertenece al precio base.' },             
                               { label: '', value: item_array , type: 'item_array', index: 'items' }];
       stepfield.options.push(optionsField);   
-      return optionsField[6];           
+      return optionsField[7];           
     },
     addItem(option,sku = '',name = '',disable = '',selected = '0',price = '0',special_price = '0',title = '',icon_ngr = '0') {
       this.errorMsg = '';
@@ -289,16 +289,23 @@ export default {
       }
     },
     processJsonData(event) {
-      console.log(this.jsonImport);
       this.init = true;
       this.errorMsg = '';
       this.successMsg = '';
       this.jsonImport.steps.forEach((step) => {
         let stepField = this.newStep(event,step.step,step.sub_options);
         step.options.forEach((option) => {
-          let optionField = this.addOption(stepField,option.title,option.subtitle,option.type,option.min_qty,option.max_qty,option.disable.join(","),option.base_price);
+          let disable = '';
+          if (option.disable) {
+            disable = option.disable.join(",");
+          }
+          let optionField = this.addOption(stepField,option.title,option.subtitle,option.type,option.min_qty,option.max_qty,disable,option.base_price);
           option.items.forEach((item) => {
-            this.addItem(optionField,item.sku,item.name,item.disable.join(","),item.selected,item.price,item.special_price,item.title,item.icon_ngr);
+            let itemDisable = '';
+            if (item.disable) {
+              itemDisable = item.disable.join(",");
+            }
+            this.addItem(optionField,item.sku,item.name,itemDisable,item.selected,item.price,item.special_price,item.title,item.icon_ngr);
           });
         });
       });
