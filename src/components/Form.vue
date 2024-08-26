@@ -144,6 +144,9 @@ export default {
             optionObject[option.index] = option.value.trim().split(",");
           } else if (option.value && option.index != 'items'){
             optionObject[option.index] = option.value;
+          } 
+          if (option.index == 'is_additional' && option.value === "0"){
+            option.value = null;
           }
           if (option.index == 'items'){
             let itemsArray = this.generateItemsArray(option.value,step_number,optionNumber);
@@ -194,7 +197,7 @@ export default {
       this.fields.push(newStepFields);
       return newStepFields[1];
     },
-    addOption(stepfield,title = '', subtitle = '', type = '', min_qty = '0',max_qty = '1',disable = '',base_price = '0',item_array = []) {
+    addOption(stepfield,title = '', subtitle = '', type = '', min_qty = '0',max_qty = '1',disable = '',base_price = '0',is_additional = '0',item_array = []) {
       this.errorMsg = '';
       let optionsField = [{ label: 'Titulo', value: title, type: 'text', index: 'title', required:true, info: 'Pregunta que se va a mostrar en el front' },
                               { label: 'Subtitulo', value: subtitle, type: 'text', index: 'subtitle', info: 'Titulo que se muestra dentro del contenedor de items' },              
@@ -202,10 +205,11 @@ export default {
                               { label: 'Cantidad minima', value: min_qty, type: 'number', index: 'min_qty', required:true, info: 'El minimo de qty que se debe seleccionar, 0 seria no requerido.' },             
                               { label: 'Cantidad maxima', value: max_qty, type: 'number', index: 'max_qty', required:true, info: 'El máximo de qty que hay para seleccionar.' },   
                               { label: 'Skus deshabilitantes', value: disable, type: 'text', index: 'disable', info: 'Ingresar sku separados por , que indicaran que si alguno esta seleccionado oculta esta pregunta' },                         
-                              { label: 'Precio base', value: base_price, type: 'checkbox', index: 'base_price', info: 'Seleccionar si el precio que se seleccione en la opcion pertenece al precio base.' },             
+                              { label: 'Precio base', value: base_price, type: 'checkbox', index: 'base_price', info: 'Seleccionar si el precio que se seleccione en la opcion pertenece al precio base.' },     
+                              { label: 'Es adicional?', value: is_additional, type: 'checkbox', index: 'is_additional', info: 'Seleccionar si lo que se seleccione en la opcion es un adicional.' },                     
                               { label: '', value: item_array , type: 'item_array', index: 'items' }];
       stepfield.options.push(optionsField);   
-      return optionsField[7];           
+      return optionsField[8];           
     },
     addItem(option,sku = '',name = '',disable = '',selected = '0',price = '0',special_price = '0',title = '',icon_ngr = '0') {
       this.errorMsg = '';
@@ -299,7 +303,7 @@ export default {
           if (option.disable) {
             disable = option.disable.join(",");
           }
-          let optionField = this.addOption(stepField,option.title,option.subtitle,option.type,option.min_qty,option.max_qty,disable,option.base_price);
+          let optionField = this.addOption(stepField,option.title,option.subtitle,option.type,option.min_qty,option.max_qty,disable,option.base_price,option.is_additional);
           option.items.forEach((item) => {
             let itemDisable = '';
             if (item.disable) {
