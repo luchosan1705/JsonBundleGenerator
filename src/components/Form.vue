@@ -186,6 +186,9 @@ export default {
           if (item.index == 'icon_ngr' && item.value === "0"){
             item.value = null;
           }
+          if (item.index == 'item_max_qty' && item.value === "0"){
+            item.value = null;
+          }
           if (item.index == 'disable' && item.value){
             itemObject[item.index] = item.value.trim().split(",");
           } else if (item.value){
@@ -219,7 +222,7 @@ export default {
       stepfield.options.push(optionsField);   
       return optionsField[9];           
     },
-    addItem(option,sku = '',name = '',disable = '',selected = '0',price = '0',special_price = '0',title = '',icon_ngr = '0') {
+    addItem(option,sku = '',name = '',disable = '',selected = '0',price = '0',special_price = '0',title = '',icon_ngr = '0', item_max_qty = '0') {
       this.errorMsg = '';
       option.value.push([
         { label: 'Sku', value: sku, type: 'text', index: 'sku', required:true, info: 'Sku del producto simple' },              
@@ -230,6 +233,7 @@ export default {
         { label: 'Precio especial', value: special_price, type: 'text', index: 'special_price', info:'Si tiene un precio especial se carga, sino se pone en 0. Si no se coloca nada tomara el precio extra o del item.' },             
         { label: 'Titulo sub-item', value: title, type: 'text', index: 'title', info: 'Titulo de sub-item en caso de tener varios box para la pregunta, se agruparan por titulo por eso es importante que sea igual para el grupo' },             
         { label: 'Usar icono', value: icon_ngr, type: 'checkbox', index: 'icon_ngr', info: 'Seleccionar si la imagen que se va a mostrar va a ser el icono y no el thumbnail.' },                     
+        { label: 'Maxima cantidad', value: item_max_qty, type: 'text', index: 'item_max_qty', info: 'Maxima cantidad que se puede seleccionar de este producto.' },             
       ]);
     },
     addProduct() {
@@ -326,7 +330,7 @@ export default {
             if (item.disable) {
               itemDisable = item.disable.join(",");
             }
-            this.addItem(optionField,item.sku,item.name,itemDisable,item.selected,item.price,item.special_price,item.title,item.icon_ngr);
+            this.addItem(optionField,item.sku,item.name,itemDisable,item.selected,item.price,item.special_price,item.title,item.icon_ngr,item.item_max_qty);
           });
         });
       });

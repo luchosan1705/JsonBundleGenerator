@@ -1,0 +1,190 @@
+{
+	"steps": [
+		{
+			"step": "HAMBURGUESA ",
+			"step_number": 1,
+			"sub_options": 0,
+			"options": [
+				{
+					"code": "1-1",
+					"title": "Elige el tamaño de tu hamburguesa",
+					"type": "drop_down",
+					"min_qty": 1,
+					"max_qty": "1",
+					"base_price": "0",
+					"is_additional": "0",
+					"items": [
+						{
+							"sku": "BB2146464997",
+							"name": "A lo Pobre Regular",
+							"price": "0"
+						},
+						{
+							"sku": "BB2146464998",
+							"name": "A lo Pobre Mediana",
+							"price": "3"
+						}
+					]
+				}
+			]
+		},
+		{
+			"step": "COMBEAR",
+			"step_number": 2,
+			"sub_options": 0,
+			"options": [
+				{
+					"code": "2-1",
+					"title": "Desea combear",
+					"type": "drop_down",
+					"min_qty": "0",
+					"max_qty": "1",
+					"base_price": "0",
+					"is_additional": "0",
+					"items": [
+						{
+							"sku": "BB2146466304",
+							"name": "Papas Fritas Regulares + Gaseosa",
+							"price": "4"
+						},
+						{
+							"sku": "BB2146466305",
+							"name": "Papas Fritas Medianas + Gaseosa",
+							"price": "5"
+						},
+						{
+							"sku": "BB2146469816",
+							"name": "Papas Fritas Grandes + Gaseosa",
+							"price": "6"
+						}
+					]
+				},
+				{
+					"code": "2-2",
+					"title": "Elige tu papa",
+					"type": "drop_down",
+					"min_qty": 1,
+					"max_qty": "1",
+					"base_price": "0",
+					"is_additional": true,
+					"required_for": "2-1",
+					"items": [
+						{
+							"sku": "BB2146464927",
+							"name": "Papa Regular",
+							"disable": [
+								"BB2146466305",
+								"BB2146469816"
+							],
+							"selected": true,
+							"price": "0"
+						},
+						{
+							"sku": "BB2146464928",
+							"name": "Papa Mediana",
+							"disable": [
+								"BB2146466304",
+								"BB2146469816"
+							],
+							"selected": true,
+							"price": "0"
+						},
+						{
+							"sku": "BB2146464929",
+							"name": "Papa Grande",
+							"disable": [
+								"BB2146466304",
+								"BB2146466305"
+							],
+							"selected": true,
+							"price": "0"
+						}
+					]
+				},
+				{
+					"code": "2-3",
+					"title": "Elige el sabor de tu bebida",
+					"type": "drop_down",
+					"min_qty": 1,
+					"max_qty": "1",
+					"base_price": "0",
+					"is_additional": true,
+					"required_for": "2-1",
+					"items": [
+						{
+							"sku": "BB2146466300",
+							"name": "Coca Cola sabor original 500 ml",
+							"price": "0"
+						},
+						{
+							"sku": "BB2146466295",
+							"name": "Coca Cola sin Azúcar 500 ml",
+							"price": "0"
+						},
+						{
+							"sku": "BB2146466297",
+							"name": "Inca Kola sabor original 500 ml",
+							"price": "0"
+						},
+						{
+							"sku": "BB2146466296",
+							"name": "Inca Kola sin azúcar 500 ml",
+							"price": "0"
+						},
+						{
+							"sku": "BB2146466298",
+							"name": "Fanta sabor original 500 ml",
+							"price": "0"
+						},
+						{
+							"sku": "BB2146466301",
+							"name": "Sprite sabor original 500 ml",
+							"price": "0"
+						},
+						{
+							"sku": "BB2146464959",
+							"name": "San Luis Sin Gas 625 ml",
+							"price": "0"
+						}
+					]
+				}
+			]
+		},
+		{
+			"step": "SALSAS",
+			"step_number": 3,
+			"sub_options": 0,
+			"options": [
+				{
+					"code": "3-1",
+					"title": "Elige tus salsas",
+					"type": "checkbox",
+					"min_qty": 3,
+					"max_qty": 3,
+					"base_price": "0",
+					"is_additional": "0",
+					"items": [
+						{
+							"sku": "BB2146464947",
+							"name": "Mayonesa",
+							"selected": true,
+							"price": "0"
+						},
+						{
+							"sku": "BB2146464948",
+							"name": "Ketchup",
+							"selected": true,
+							"price": "0"
+						},
+						{
+							"sku": "BB2146464949",
+							"name": "Ají",
+							"selected": true,
+							"price": "0"
+						}
+					]
+				}
+			]
+		}
+	]
+}
